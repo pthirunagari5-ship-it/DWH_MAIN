@@ -1,0 +1,36 @@
+{
+	"name": "DS_Source_Fusion_P",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "Fusion_Data_storage",
+			"type": "LinkedServiceReference"
+		},
+		"parameters": {
+			"Filename": {
+				"type": "String"
+			}
+		},
+		"folder": {
+			"name": "DS_Csv_based_data"
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobStorageLocation",
+				"fileName": {
+					"value": "@dataset().Filename",
+					"type": "Expression"
+				},
+				"container": "inputfiles-csv"
+			},
+			"columnDelimiter": ",",
+			"compressionCodec": null,
+			"escapeChar": "\\",
+			"firstRowAsHeader": true,
+			"quoteChar": "\""
+		},
+		"schema": []
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

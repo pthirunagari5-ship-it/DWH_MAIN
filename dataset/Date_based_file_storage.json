@@ -1,0 +1,27 @@
+{
+	"name": "Date_based_file_storage",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "DWH_Storage_account",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "DS_Csv_based_data"
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobStorageLocation",
+				"folderPath": "date-based-on-date",
+				"container": "input-fusion"
+			},
+			"columnDelimiter": ",",
+			"escapeChar": "\\",
+			"firstRowAsHeader": true,
+			"quoteChar": "\""
+		},
+		"schema": []
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

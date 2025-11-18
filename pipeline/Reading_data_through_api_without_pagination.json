@@ -1,0 +1,102 @@
+{
+	"name": "Reading_data_through_api_without_pagination",
+	"properties": {
+		"activities": [
+			{
+				"name": "Copy data1",
+				"type": "Copy",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "RestSource",
+						"httpRequestTimeout": "00:01:40",
+						"requestInterval": "00.00:00:00.010",
+						"requestMethod": "GET",
+						"paginationRules": {
+							"supportRFC5988": "true"
+						}
+					},
+					"sink": {
+						"type": "DelimitedTextSink",
+						"storeSettings": {
+							"type": "AzureBlobStorageWriteSettings"
+						},
+						"formatSettings": {
+							"type": "DelimitedTextWriteSettings",
+							"quoteAllText": true,
+							"fileExtension": ".txt"
+						}
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"mappings": [
+							{
+								"source": {
+									"path": "['name']"
+								},
+								"sink": {
+									"name": "name"
+								}
+							},
+							{
+								"source": {
+									"path": "['url']"
+								},
+								"sink": {
+									"name": "url"
+								}
+							},
+							{
+								"source": {
+									"path": "$['count']"
+								},
+								"sink": {
+									"name": "count"
+								}
+							},
+							{
+								"source": {
+									"path": "$['next']"
+								},
+								"sink": {
+									"name": "next"
+								}
+							}
+						],
+						"collectionReference": "$['results']"
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "RestAPI_Source",
+						"type": "DatasetReference"
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "Api_output_file",
+						"type": "DatasetReference",
+						"parameters": {
+							"Api_file_name": "api_offset_20"
+						}
+					}
+				]
+			}
+		],
+		"folder": {
+			"name": "API_related"
+		},
+		"annotations": [],
+		"lastPublishTime": "2025-11-08T19:15:14Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

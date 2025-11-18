@@ -1,0 +1,49 @@
+{
+	"name": "DS_Fusion_Files_to_tables_P",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "Fusion_Data_storage",
+			"type": "LinkedServiceReference"
+		},
+		"parameters": {
+			"FileName": {
+				"type": "String"
+			}
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobStorageLocation",
+				"fileName": {
+					"value": "@dataset().FileName",
+					"type": "Expression"
+				},
+				"container": "files-for-tables"
+			},
+			"columnDelimiter": ",",
+			"escapeChar": "\\",
+			"firstRowAsHeader": true,
+			"quoteChar": "\""
+		},
+		"schema": [
+			{
+				"name": "DEPARTMENT_ID",
+				"type": "String"
+			},
+			{
+				"name": "DEPARTMENT_NAME",
+				"type": "String"
+			},
+			{
+				"name": "MANAGER_ID",
+				"type": "String"
+			},
+			{
+				"name": "LOCATION_ID",
+				"type": "String"
+			}
+		]
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}
