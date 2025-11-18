@@ -1,0 +1,26 @@
+{
+	"name": "File_copy",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "Fusion_Data_storage",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "DS_Csv_based_data"
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobStorageLocation",
+				"container": "inputfiles-csv"
+			},
+			"columnDelimiter": ",",
+			"escapeChar": "\\",
+			"firstRowAsHeader": true,
+			"quoteChar": "\""
+		},
+		"schema": []
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

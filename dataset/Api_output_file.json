@@ -1,0 +1,32 @@
+{
+	"name": "Api_output_file",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "DWH_Storage_account",
+			"type": "LinkedServiceReference"
+		},
+		"parameters": {
+			"Api_file_name": {
+				"type": "String"
+			}
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobStorageLocation",
+				"fileName": {
+					"value": "@dataset().Api_file_name",
+					"type": "Expression"
+				},
+				"container": "api-output"
+			},
+			"columnDelimiter": ",",
+			"escapeChar": "\\",
+			"firstRowAsHeader": true,
+			"quoteChar": "\""
+		},
+		"schema": []
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

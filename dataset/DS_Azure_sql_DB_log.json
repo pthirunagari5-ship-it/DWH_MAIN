@@ -1,0 +1,20 @@
+{
+	"name": "DS_Azure_sql_DB_log",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "AzureSqlDatabase1",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "DS_database"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "log_hist"
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

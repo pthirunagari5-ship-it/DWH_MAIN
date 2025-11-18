@@ -1,0 +1,9 @@
+{
+	"name": "ADF-DWH-Z66204",
+	"location": "centralindia",
+	"identity": {
+		"type": "SystemAssigned",
+		"principalId": "5526e825-48cb-4c24-bcbd-66a1b6c3897c",
+		"tenantId": "2a817174-6093-44d1-826c-e33865424c9e"
+	}
+}
