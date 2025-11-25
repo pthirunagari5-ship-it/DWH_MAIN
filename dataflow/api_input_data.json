@@ -33,6 +33,9 @@
 				},
 				{
 					"name": "split1"
+				},
+				{
+					"name": "derivedColumn2"
 				}
 			],
 			"scriptLines": [
@@ -57,6 +60,7 @@
 				"select1 derive(API_URL = 'https://jsonplaceholder.typicode.com/posts') ~> derivedColumn1",
 				"source1 split(isNull(userId),",
 				"     disjoint: false) ~> split1@(Main, dup)",
+				"split1@dup derive(Json_body = ERROR_FUNCTION('')) ~> derivedColumn2",
 				"derivedColumn1 sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     deletable:false,",
