@@ -30,6 +30,9 @@
 				},
 				{
 					"name": "derivedColumn1"
+				},
+				{
+					"name": "split1"
 				}
 			],
 			"scriptLines": [
@@ -43,7 +46,7 @@
 				"     isolationLevel: 'READ_UNCOMMITTED',",
 				"     query: 'select employee_id as userId,concat(first_name,last_name) as title,email as body\\nfrom emp where EMPLOYEE_ID is not null',",
 				"     format: 'query') ~> source1",
-				"source1 filter(not(isNull(userId))) ~> filter1",
+				"split1@Main filter(not(isNull(userId))) ~> filter1",
 				"filter1 select(mapColumn(",
 				"          userId,",
 				"          title,",
@@ -52,6 +55,8 @@
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true) ~> select1",
 				"select1 derive(API_URL = 'https://jsonplaceholder.typicode.com/posts') ~> derivedColumn1",
+				"source1 split(isNull(userId),",
+				"     disjoint: false) ~> split1@(Main, dup)",
 				"derivedColumn1 sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     deletable:false,",
