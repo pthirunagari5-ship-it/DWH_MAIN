@@ -1,0 +1,19 @@
+{
+	"name": "Json_input",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "Fusion_Data_storage",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "Json",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobStorageLocation",
+				"fileName": "api_input.json",
+				"container": "inputfiles-csv"
+			}
+		},
+		"schema": {}
+	}
+}

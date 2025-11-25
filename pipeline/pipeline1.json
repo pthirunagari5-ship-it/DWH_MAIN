@@ -24,12 +24,78 @@
 							"supportRFC5988": "true"
 						}
 					},
-					"enableStaging": false
+					"sink": {
+						"type": "DelimitedTextSink",
+						"storeSettings": {
+							"type": "AzureBlobStorageWriteSettings"
+						},
+						"formatSettings": {
+							"type": "DelimitedTextWriteSettings",
+							"quoteAllText": true,
+							"fileExtension": ".txt"
+						}
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"mappings": [
+							{
+								"source": {
+									"path": "$['count']"
+								},
+								"sink": {
+									"name": "count"
+								}
+							},
+							{
+								"source": {
+									"path": "$['next']"
+								},
+								"sink": {
+									"name": "next"
+								}
+							},
+							{
+								"source": {
+									"path": "$['previous']"
+								},
+								"sink": {
+									"name": "previous"
+								}
+							},
+							{
+								"source": {
+									"path": "$['results'][0]['name']"
+								},
+								"sink": {
+									"name": "name"
+								}
+							},
+							{
+								"source": {
+									"path": "$['results'][0]['url']"
+								},
+								"sink": {
+									"name": "url"
+								}
+							}
+						],
+						"mapComplexValuesToString": true
+					}
 				},
 				"inputs": [
 					{
-						"referenceName": "RestAPI_Source",
+						"referenceName": "RestResource_constant",
 						"type": "DatasetReference"
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "DS_Archive",
+						"type": "DatasetReference",
+						"parameters": {
+							"FileName": "API_output"
+						}
 					}
 				]
 			}
