@@ -5,6 +5,11 @@
 			"referenceName": "AzureSqlDatabase1",
 			"type": "LinkedServiceReference"
 		},
+		"parameters": {
+			"table_name": {
+				"type": "string"
+			}
+		},
 		"folder": {
 			"name": "DS_database"
 		},
@@ -13,7 +18,10 @@
 		"schema": [],
 		"typeProperties": {
 			"schema": "dbo",
-			"table": "log_hist"
+			"table": {
+				"value": "@dataset().table_name",
+				"type": "Expression"
+			}
 		}
 	},
 	"type": "Microsoft.DataFactory/factories/datasets"
