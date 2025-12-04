@@ -145,22 +145,25 @@
 						"referenceName": "SCD_type2",
 						"type": "DataFlowReference",
 						"parameters": {
-							"parameter1": "max_seq_id"
+							"p_max_seq": {
+								"value": "@variables('V_Max_seq')",
+								"type": "Expression"
+							}
 						},
 						"datasetParameters": {
 							"source1": {
-								"FileName": "customers_initial.csv"
-							},
-							"source2": {
 								"FileName": "customers_updates.csv"
 							},
-							"maxValue": {
-								"table_name": " "
-							},
-							"sink1": {
+							"source2": {
 								"table_name": "scd_type2"
 							},
-							"sink2": {
+							"maxValue": {
+								"table_name": "  "
+							},
+							"insert": {
+								"table_name": "scd_type2"
+							},
+							"Update": {
 								"table_name": "scd_type2"
 							}
 						}
@@ -187,7 +190,7 @@
 				"typeProperties": {
 					"source": {
 						"type": "AzureSqlSource",
-						"sqlReaderQuery": "select max(seq_id) from scd_type2\n",
+						"sqlReaderQuery": "select max(seq_id) max_seq_id from scd_type2\n",
 						"queryTimeout": "02:00:00",
 						"partitionOption": "None"
 					},
@@ -217,16 +220,16 @@
 				},
 				"userProperties": [],
 				"typeProperties": {
-					"variableName": "Max_seq",
+					"variableName": "V_Max_seq",
 					"value": {
-						"value": "@activity('Lookup1').output.firstRow",
+						"value": "@activity('Lookup1').output.firstRow.max_seq_id",
 						"type": "Expression"
 					}
 				}
 			}
 		],
 		"variables": {
-			"Max_seq": {
+			"V_Max_seq": {
 				"type": "Integer"
 			}
 		},

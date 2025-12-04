@@ -13,7 +13,7 @@
 				},
 				{
 					"dataset": {
-						"referenceName": "SCD_Type_Fusion",
+						"referenceName": "DS_Azure_sql_DB_log",
 						"type": "DatasetReference"
 					},
 					"name": "source2"
@@ -32,14 +32,14 @@
 						"referenceName": "DS_Azure_sql_DB_log",
 						"type": "DatasetReference"
 					},
-					"name": "sink1"
+					"name": "insert"
 				},
 				{
 					"dataset": {
 						"referenceName": "DS_Azure_sql_DB_log",
 						"type": "DatasetReference"
 					},
-					"name": "sink2"
+					"name": "Update"
 				}
 			],
 			"transformations": [
@@ -57,11 +57,17 @@
 				},
 				{
 					"name": "derivedColumn2"
+				},
+				{
+					"name": "select1"
+				},
+				{
+					"name": "select2"
 				}
 			],
 			"scriptLines": [
 				"parameters{",
-				"     parameter1 as integer",
+				"     p_max_seq as integer",
 				"}",
 				"source(output(",
 				"          CustomerID as short,",
@@ -78,11 +84,16 @@
 				"          CustomerName as string,",
 				"          City as string,",
 				"          Email as string,",
-				"          UpdateDate as date",
+				"          UpdateDate as date,",
+				"          seq_id as long,",
+				"          current_flag as integer,",
+				"          effective_start_date as date,",
+				"          effective_end__date as date",
 				"     ),",
 				"     allowSchemaDrift: true,",
 				"     validateSchema: false,",
-				"     ignoreNoFilesFound: false) ~> source2",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> source2",
 				"source(output(",
 				"          max_seq_id as long",
 				"     ),",
@@ -97,8 +108,8 @@
 				"alterRow1 derive(current_flag = 1,",
 				"          effective_start_date = source1@UpdateDate,",
 				"          effective_end__date = addMonths(currentDate(),1),",
-				"          seq_id = $parameter1+seq_id) ~> derivedColumn1",
-				"join1 alterRow(insertIf(isNull(source2@CustomerID)),",
+				"          seq_id = $p_max_seq+surrogateKey1@seq_id) ~> derivedColumn1",
+				"join1 alterRow(insertIf(not(isNull(source1@CustomerID))),",
 				"     updateIf(source1@CustomerID==source2@CustomerID)) ~> alterRow1",
 				"surrogateKey1, source2 join(source1@CustomerID == source2@CustomerID,",
 				"     joinType:'left',",
@@ -107,7 +118,32 @@
 				"     broadcast: 'auto')~> join1",
 				"alterRow1 derive(current_flag = 0,",
 				"          effective_end__date = currentDate()) ~> derivedColumn2",
-				"derivedColumn1 sink(allowSchemaDrift: true,",
+				"derivedColumn2 select(mapColumn(",
+				"          CustomerID = source1@CustomerID,",
+				"          CustomerName = source1@CustomerName,",
+				"          City = source1@City,",
+				"          Email = source1@Email,",
+				"          UpdateDate = source1@UpdateDate,",
+				"          seq_id = surrogateKey1@seq_id,",
+				"          current_flag,",
+				"          effective_end__date",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select1",
+				"derivedColumn1 select(mapColumn(",
+				"          CustomerID = source1@CustomerID,",
+				"          CustomerName = source1@CustomerName,",
+				"          City = source1@City,",
+				"          Email = source1@Email,",
+				"          UpdateDate = source1@UpdateDate,",
+				"          seq_id,",
+				"          current_flag,",
+				"          effective_start_date,",
+				"          effective_end__date",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select2",
+				"select2 sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     deletable:false,",
 				"     insertable:true,",
@@ -116,34 +152,28 @@
 				"     format: 'table',",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true,",
-				"     errorHandlingOption: 'stopOnFirstError') ~> sink1",
-				"derivedColumn2 sink(allowSchemaDrift: true,",
+				"     errorHandlingOption: 'stopOnFirstError') ~> insert",
+				"select1 sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     deletable:false,",
 				"     insertable:false,",
 				"     updateable:true,",
-				"     upsertable:false,",
+				"     upsertable:true,",
 				"     keys:['CustomerID'],",
 				"     format: 'table',",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true,",
 				"     errorHandlingOption: 'stopOnFirstError',",
 				"     mapColumn(",
-				"          CustomerID = source1@CustomerID,",
-				"          CustomerName = source1@CustomerName,",
-				"          City = source1@City,",
-				"          Email = source1@Email,",
-				"          UpdateDate = source1@UpdateDate,",
-				"          max_seq_id,",
+				"          CustomerID,",
+				"          CustomerName,",
+				"          City,",
+				"          Email,",
+				"          UpdateDate,",
 				"          seq_id,",
-				"          CustomerID = source2@CustomerID,",
-				"          CustomerName = source2@CustomerName,",
-				"          City = source2@City,",
-				"          Email = source2@Email,",
-				"          UpdateDate = source2@UpdateDate,",
 				"          current_flag,",
 				"          effective_end__date",
-				"     )) ~> sink2"
+				"     )) ~> Update"
 			]
 		}
 	}
