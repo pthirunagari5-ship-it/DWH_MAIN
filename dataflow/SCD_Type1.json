@@ -10,6 +10,13 @@
 						"type": "DatasetReference"
 					},
 					"name": "source1"
+				},
+				{
+					"dataset": {
+						"referenceName": "DS_Azure_sql_DB_log",
+						"type": "DatasetReference"
+					},
+					"name": "source2"
 				}
 			],
 			"sinks": [
@@ -27,6 +34,12 @@
 				},
 				{
 					"name": "derivedColumn1"
+				},
+				{
+					"name": "join1"
+				},
+				{
+					"name": "alterRow1"
 				}
 			],
 			"scriptLines": [
@@ -40,6 +53,18 @@
 				"     allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     ignoreNoFilesFound: false) ~> source1",
+				"source(output(",
+				"          CustID as short,",
+				"          CustName as string,",
+				"          City as string,",
+				"          Email as string,",
+				"          UpdateDate as date,",
+				"          wh_updated_date as timestamp",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> source2",
 				"source1 select(mapColumn(",
 				"          CustID = CustomerID,",
 				"          CustName = CustomerName,",
@@ -49,14 +74,23 @@
 				"     ),",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true) ~> select1",
-				"select1 derive(wh_updated_date = currentUTC()) ~> derivedColumn1",
-				"derivedColumn1 sink(allowSchemaDrift: true,",
+				"select1 derive(wh_updated_date = currentUTC(),",
+				"          UpdateDate = currentDate(),",
+				"          City = case(CustID==1, 'India', City)) ~> derivedColumn1",
+				"derivedColumn1, source2 join(select1@CustID == source2@CustID,",
+				"     joinType:'left',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> join1",
+				"join1 alterRow(insertIf(select1@CustID!=source2@CustID),",
+				"     updateIf(select1@CustID==source2@CustID)) ~> alterRow1",
+				"alterRow1 sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     deletable:false,",
 				"     insertable:true,",
-				"     updateable:false,",
-				"     upsertable:false,",
-				"     recreate:true,",
+				"     updateable:true,",
+				"     upsertable:true,",
+				"     keys:['CustID'],",
 				"     format: 'table',",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true,",
